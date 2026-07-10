@@ -27,6 +27,7 @@ Mochita <- R6::R6Class(
     },
     set = function(name, value) {
       private$headers[[name]] <- value
+      invisible(self)
     },
     getPrivate = function() {
       private
