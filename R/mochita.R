@@ -25,13 +25,17 @@ Mochita <- R6::R6Class(
         self[[method]] <- f
       }
     },
+    set = function(name, value) {
+      private$headers[[name]] <- value
+    },
     getPrivate = function() {
       private
     }
   ),
   private = list(
     path = character(0),
-    method = character(0)
+    method = character(0),
+    headers = list()
   ),
   lock_objects = FALSE,
   cloneable = FALSE
