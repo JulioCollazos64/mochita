@@ -180,3 +180,12 @@ Mochita <- R6::R6Class(
   lock_objects = FALSE,
   cloneable = FALSE
 )
+
+#' @keywords internal
+#' @noRd
+ignore_unused_imports <- function() {
+  R6::R6Class
+  httpuv::startServer
+  nanonext::ncurl_aio
+  testthat::expect_identical
+}
