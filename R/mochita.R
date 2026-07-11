@@ -1,3 +1,36 @@
+#' Test an HTTP server
+#'
+#' `mochita()` builds the specification for testing an `httpuv` app.
+#' It returns a `Mochita` object whose methods can be chained together
+#' to build up a request, describe the expectations it
+#' should meet, and finally send it with `$perform()`.
+#'
+#' @param app App definition, see [httpuv::startServer].
+#'
+#' @returns A `Mochita` object with the following chainable methods:
+#' \describe{
+#'   \item{`$get(path)`, `$head(path)`, `$post(path)`, `$put(path)`,
+#'     `$delete(path)`, `$connect(path)`, `$options(path)`, `$trace(path)`,
+#'     `$patch(path)`}{Set the HTTP method and path of the request.}
+#'   \item{`$set(name, value)`}{Set a request header.}
+#'   \item{`$expect()`}{Add an expectation to check against the
+#'     response, once performed. Accepts a status code (optionally with a
+#'     body to match), a header name/value pair, a body to match, or a
+#'     custom function taking the response.}
+#'   \item{`$perform()`}{Start the app, send the request, and run the
+#'     recorded expectations against the response.}
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' mochita(app)$get("/")$
+#'   set("Accept", "text/plain")$
+#'   expect(200)$
+#'   expect("Content-Type", "text/plain")$
+#'   perform()
+#' }
+#'
+#' @export
 mochita <- function(app) {
   Mochita$new(app)
 }
