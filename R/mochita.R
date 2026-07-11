@@ -34,8 +34,16 @@ Mochita <- R6::R6Class(
       # status
       if (is.numeric(a)) {
         status <- a
-        test <- function(res) {
-          testthat::expect_equal(res$status, status)
+        if (missing(b)) {
+          test <- function(res) {
+            testthat::expect_equal(res$status, status)
+          }
+        } else {
+          body <- b
+          test <- function(res) {
+            testthat::expect_equal(res$status, status)
+            testthat::expect_identical(res$body, body)
+          }
         }
         private$tests <- append(private$tests, test)
         return(invisible(self))
