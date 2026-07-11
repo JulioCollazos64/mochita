@@ -6,6 +6,24 @@ describe("mochita(app)", {
     )$set("Accept", "text/plain")$expect(200)$expect(
       "Content-Type",
       "text/plain"
-    )$perform()
+    )$expect("my cool browser")$perform()
+
+    it("should test HTML responses", {
+      mochita(app)$get("/html")$set(
+        "User-Agent",
+        "a cool browser"
+      )$set("Accept", "text/html")$expect(200)$expect(
+        "Content-Type",
+        "text/html"
+      )$expect(
+        function(res) {
+          text <- res$body
+          testthat::expect_identical(
+            text,
+            '<p class="user-agent">a cool browser</p>'
+          )
+        }
+      )$perform()
+    })
   })
 })
