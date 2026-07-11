@@ -30,14 +30,10 @@ Mochita <- R6::R6Class(
       private$headers[[name]] <- value
       invisible(self)
     },
-    expect = function(...) {
-      args <- list(...)
-
-      stopifnot(length(args) <= 2)
-
-      if (length(args) == 1) {
-        stopifnot(is.numeric(..1))
-        status <- ..1
+    expect = function(a, b) {
+      # status
+      if (is.numeric(a)) {
+        status <- a
         test <- function(res) {
           testthat::expect_equal(res$status, status)
         }
@@ -45,23 +41,22 @@ Mochita <- R6::R6Class(
         return(invisible(self))
       }
 
-      name <- ..1
-      value <- ..2
+      # header
+      if (is.character(b)) {
+        name <- a
+        value <- b
+        private$responseHeaders <- c(private$responseHeaders, name)
 
-      stopifnot(is.character(name), is.character(value))
+        test <- function(res) {
+          testthat::expect_identical(
+            res$headers[[name]],
+            value
+          )
+        }
 
-      private$responseHeaders <- c(private$responseHeaders, name)
-
-      test <- function(res) {
-        testthat::expect_identical(
-          res$headers[[name]],
-          value
-        )
+        private$tests <- append(private$tests, test)
+        return(invisible(self))
       }
-
-      private$tests <- append(private$tests, test)
-
-      invisible(self)
     },
     perform = function() {
       server <- httpuv::startServer(
