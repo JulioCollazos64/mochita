@@ -49,9 +49,8 @@ Mochita <- R6::R6Class(
         return(invisible(self))
       }
 
-      # custom test
       if (is.function(a)) {
-        private$tests <- append(private$tests, test)
+        private$tests <- append(private$tests, a)
         return(invisible(self))
       }
 
