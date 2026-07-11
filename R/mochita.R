@@ -41,6 +41,12 @@ Mochita <- R6::R6Class(
         return(invisible(self))
       }
 
+      # custom test
+      if (is.function(a)) {
+        private$tests <- append(private$tests, test)
+        return(invisible(self))
+      }
+
       # header
       if (is.character(b)) {
         name <- a
