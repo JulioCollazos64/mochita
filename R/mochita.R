@@ -63,6 +63,10 @@ Mochita <- R6::R6Class(
       private$headers[[name]] <- value
       invisible(self)
     },
+    send = function(body) {
+      private$body <- body
+      invisible(self)
+    },
     expect = function(a, b = NULL) {
       # status
       if (is.numeric(a)) {
@@ -143,7 +147,8 @@ Mochita <- R6::R6Class(
         url,
         method = toupper(private$method),
         headers = private$headers,
-        response = private$responseHeaders
+        response = private$responseHeaders,
+        data = private$body
       )
 
       while (nanonext::unresolved(aio)) {
@@ -166,6 +171,7 @@ Mochita <- R6::R6Class(
     path = character(0),
     method = character(0),
     headers = list(),
+    body = NULL,
     tests = list(),
     responseHeaders = character(0),
     app = NULL,

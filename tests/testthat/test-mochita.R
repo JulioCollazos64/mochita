@@ -25,5 +25,12 @@ describe("mochita(app)", {
         }
       )$perform()
     })
+
+    it("should accept request body set via the send method", {
+      mochita(app)$post("/json")$set("Accept", "application/json")$expect(
+        "Content-Type",
+        "application/json"
+      )$send('{"len":"3"}')$expect(200L, '{"x":[1,2,3]}')$perform()
+    })
   })
 })

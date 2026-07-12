@@ -23,3 +23,20 @@ router$get("/html", \(req, res) {
     )
   )
 })
+
+router$post("/json", \(req, res) {
+  body <- yyjsonr::read_json_raw(req$rook.input$read())
+
+  body <- yyjsonr::write_json_str(
+    list(x = seq_len(body$len)),
+    opts = yyjsonr::opts_write_json(auto_unbox = TRUE)
+  )
+
+  list(
+    body = body,
+    status = 200L,
+    headers = list(
+      `Content-Type` = "application/json"
+    )
+  )
+})
