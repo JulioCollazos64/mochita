@@ -39,15 +39,13 @@ Mochita <- R6::R6Class(
   "Mochita",
   public = list(
     initialize = function(app) {
-      private$app <- app
-
       for (method in httpMethods) {
         f <- function(path) {}
         body(f) <- substitute(
           {
             stopifnot(is.character(path))
 
-            test <- Test$new(METHOD, path, private$app)
+            test <- Test$new(METHOD, path, app)
 
             invisible(test)
           },
@@ -58,13 +56,7 @@ Mochita <- R6::R6Class(
 
         self[[method]] <- f
       }
-    },
-    getPrivate = function() {
-      private
     }
-  ),
-  private = list(
-    app = NULL
   ),
   lock_objects = FALSE,
   cloneable = FALSE
