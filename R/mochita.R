@@ -95,7 +95,6 @@ Mochita <- R6::R6Class(
       if (is.character(b)) {
         name <- a
         value <- b
-        private$responseHeaders <- c(private$responseHeaders, name)
 
         test <- function(res) {
           testthat::expect_identical(
@@ -147,7 +146,7 @@ Mochita <- R6::R6Class(
         url,
         method = toupper(private$method),
         headers = private$headers,
-        response = private$responseHeaders,
+        response = TRUE,
         data = private$body
       )
 
@@ -173,7 +172,6 @@ Mochita <- R6::R6Class(
     headers = list(),
     body = NULL,
     tests = list(),
-    responseHeaders = character(0),
     app = NULL,
     performTests = function(tests, response) {
       test_that("$perform results", {
