@@ -1,4 +1,4 @@
-Test <- R6::R6Class(
+Test <- R6Class(
   "Test",
   public = list(
     initialize = function(method, path, app) {
@@ -20,13 +20,13 @@ Test <- R6::R6Class(
         status <- a
         if (is.null(b)) {
           test <- function(res) {
-            testthat::expect_equal(res$status, status)
+            expect_equal(res$status, status)
           }
         } else {
           body <- b
           test <- function(res) {
-            testthat::expect_equal(res$status, status)
-            testthat::expect_identical(res$body, body)
+            expect_equal(res$status, status)
+            expect_identical(res$body, body)
           }
         }
         private$tests <- append(private$tests, test)
@@ -44,7 +44,7 @@ Test <- R6::R6Class(
         value <- b
 
         test <- function(res) {
-          testthat::expect_identical(
+          expect_identical(
             res$headers[[name]],
             value
           )
@@ -57,7 +57,7 @@ Test <- R6::R6Class(
       # body
 
       test <- function(res) {
-        testthat::expect_identical(
+        expect_identical(
           res$body,
           a
         )
@@ -66,18 +66,18 @@ Test <- R6::R6Class(
       invisible(self)
     },
     perform = function() {
-      server <- httpuv::startServer(
+      server <- startServer(
         host = "127.0.0.1",
-        port = httpuv::randomPort(),
+        port = randomPort(),
         app = private$app
       )
-      on.exit(httpuv::stopServer(server), add = TRUE)
+      on.exit(stopServer(server), add = TRUE)
 
       url <- private$serverAddress(server, private$path)
 
       # From: https://github.com/r-lib/nanonext/blob/main/README.md
 
-      aio <- nanonext::ncurl_aio(
+      aio <- ncurl_aio(
         url,
         method = private$method,
         headers = private$headers,
@@ -85,8 +85,8 @@ Test <- R6::R6Class(
         data = private$body
       )
 
-      while (nanonext::unresolved(aio)) {
-        nanonext::run_event_loop(1000)
+      while (unresolved(aio)) {
+        run_event_loop(1000)
       }
 
       res <- list(
@@ -109,7 +109,7 @@ Test <- R6::R6Class(
       paste0("http://", server$getHost(), ":", server$getPort(), path)
     },
     performTests = function(tests, response) {
-      testthat::test_that(
+      test_that(
         paste("$perform results for", private$method, "on", private$path),
         {
           for (test in tests) {
