@@ -23,5 +23,10 @@ Authors:
   \item Julio Collazos \email{amarullazo626@gmail.com}
 }
 
+Other contributors:
+\itemize{
+  \item  supertest contributors (authors listed in <https://github.com/forwardemail/supertest/graphs/contributors>) [contributor, copyright holder]
+}
+
 }
 \keyword{internal}

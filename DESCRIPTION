@@ -1,8 +1,11 @@
 Package: mochita
 Title: Test R Web Applications
 Version: 1.0.0
-Authors@R: 
-    person("Julio", "Collazos", , "amarullazo626@gmail.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("Julio", "Collazos", , "amarullazo626@gmail.com", role = c("aut", "cre")),
+    person("", "supertest contributors", role = c("ctb","cph"),
+    comment = "authors listed in <https://github.com/forwardemail/supertest/graphs/contributors>")
+  )
 Description: Write so-called 'Integration Tests' for your R web applications
  by declaring an HTTP request and the expectations its response should meet.
 License: MIT + file LICENSE
