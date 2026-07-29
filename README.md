@@ -1,0 +1,149 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# mochita
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+mochita lets you write integration tests for your R web applications.
+You declare an HTTP request and the expectations its response should
+meet; `$perform()` then spins up your app on a random local port, sends
+the request for real, and checks the response with
+[testthat](https://testthat.r-lib.org/).
+
+## Installation
+
+You can install the development version of mochita from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("JulioCollazos64/mochita")
+```
+
+## Example
+
+`mochita()` takes an app definition as understood by
+[httpuv](https://github.com/rstudio/httpuv), i.e. a list with a `call`
+function that receives a Rook request and returns the response:
+
+``` r
+app <- list(
+  call = function(req) {
+    list(
+      status = 200L,
+      headers = list("Content-Type" = "text/plain"),
+      body = paste0("hello, ", req$HTTP_USER_AGENT)
+    )
+  }
+)
+```
+
+Pick an HTTP method, build up the request, declare the expectations and
+finally `$perform()` it:
+
+``` r
+library(mochita)
+
+mochita(app)$get("/")$
+  set("User-Agent", "mochita")$
+  expect(200)$
+  expect("Content-Type", "text/plain")$
+  expect("hello, mochita")$
+  perform()
+#> Test passed with 3 successes 🎉.
+```
+
+## Expectations
+
+`$expect()` figures out what to check from the arguments you give it:
+
+``` r
+mochita(app)$get("/")$
+  set("User-Agent", "mochita")$
+  expect(200)$                          # response status
+  expect(200L, "hello, mochita")$       # status and body at once
+  expect("Content-Type", "text/plain")$ # a header name/value pair
+  expect("hello, mochita")$             # the response body
+  perform()
+```
+
+For anything else, pass a function taking the response — a list with
+`status`, `headers` and `body` — and use any testthat expectation
+inside:
+
+``` r
+mochita(app)$get("/")$
+  set("User-Agent", "netscape")$
+  expect(function(res) {
+    testthat::expect_match(res$body, "netscape")
+  })$
+  perform()
+```
+
+## Sending a request body
+
+Use `$send()` to attach a body to the request, for instance when testing
+a JSON endpoint:
+
+``` r
+json_app <- list(
+  call = function(req) {
+    input <- yyjsonr::read_json_raw(req$rook.input$read())
+
+    body <- yyjsonr::write_json_str(
+      list(x = seq_len(input$len)),
+      opts = yyjsonr::opts_write_json(auto_unbox = TRUE)
+    )
+
+    list(
+      status = 200L,
+      headers = list("Content-Type" = "application/json"),
+      body = body
+    )
+  }
+)
+
+mochita(json_app)$post("/json")$
+  set("Accept", "application/json")$
+  send('{"len":3}')$
+  expect("Content-Type", "application/json")$
+  expect(200L, '{"x":[1,2,3]}')$
+  perform()
+#> Test passed with 3 successes 🎉.
+```
+
+## Reusing the app
+
+Passing the app each time is not necessary. If you are testing the same
+app, assign the result of `mochita()` once — each method verb starts a
+fresh request:
+
+``` r
+req <- mochita(app)
+
+req$get("/")$set("User-Agent", "firefox")$expect("hello, firefox")$perform()
+#> Test passed with 1 success 🎉.
+
+req$get("/")$set("User-Agent", "chromium")$expect("hello, chromium")$perform()
+#> Test passed with 1 success 😸.
+```
+
+## Use in your test suite
+
+Since expectations run through testthat, mochita calls slot directly
+into your `tests/testthat/` files:
+
+``` r
+describe("GET /", {
+  it("greets the user agent", {
+    mochita(app)$get("/")$
+      set("User-Agent", "mochita")$
+      expect(200)$
+      expect("hello, mochita")$
+      perform()
+  })
+})
+```
